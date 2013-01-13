@@ -1,0 +1,5 @@
+<ul class="artists" ng-controller="Shiva.Controllers.Artist">
+    <li ng-repeat="artist in artists" class="artist">
+        <a href="#/{{ artist.slug }}" class="thumbnail"><img ng-src="{{ artist.image }}" alt="{{ artist.name }}" title="{{ artist.name }}"><br>{{ artist.name }}</a>
+    </li>
+</ul>

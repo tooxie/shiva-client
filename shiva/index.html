@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="shiva">
+    <head>
+        <title>Shiva &raquo; Music Player</title>
+        <link rel="stylesheet" href="css/bootstrap.css">
+        <link rel="stylesheet" href="css/index.css">
+        <script src="js/angular-1.1.1/angular.js" type="text/javascript"></script>
+        <script src="js/app.js" type="text/javascript"></script>
+        <script src="js/controllers.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    Shiva.geolocation = position.coords;
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="page-header">
+                <h1>
+                    <a href="#/">Shiva</a> » <span id="artistName">Music Player</span>
+                    <!-- // Dinosaurs will slowly die -->
+                </h1>
+            </div>
+            <noscript>
+                <h2>
+                    Please enable javascript.
+                </h2>
+            </noscript>
+
+            <div ng-view></div>
+
+            <footer>
+                Shiva by <a href="http://twitter.com/tuxie_">@tuxie_</a> &copy; 2013.
+                <a href="https://github.com/tooxie/python-shiva">Fork me</a>.
+                Based on <a href="http://www.johnmegahan.me">Johnny Megahan</a>'s
+                <a href="https://github.com/johnmegahan/Bootstrap-Music-Player">Bootstrap Music Player</a>.
+            </footer>
+        </div>
+    </body>
+</html>

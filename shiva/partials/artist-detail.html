@@ -1,0 +1,43 @@
+<ul class="albums span2">
+    <li ng-repeat="_album in artist.albums">
+        <a href="#/{{ artist.slug }}/{{ _album.slug }}" class="thumbnail" width="160" height="160"><img ng-src="{{ _album.cover }}" alt="{{ _album.name }}" title="{{ _album.name }}"></a>
+    </li>
+</ul>
+<div class="tracks span3">
+    <h6>
+        {{ album.name }} ({{ year }})
+    </h6>
+
+    <img src="{{ album.cover }}" alt="{{ album.name }}" class="albumcover img-rounded">
+
+    <h5>
+        by {{ artist.name }}
+    </h5>
+
+    <ol>
+        <li ng-repeat="_track in album.tracks">
+            <a href="#/{{ artist.slug }}/{{ album.slug }}/{{ _track.id }}">{{ _track.title }}</a>
+        </li>
+    </ol>
+</div>
+<div class="span6">
+    <h6>
+        Now Playing
+    </h6>
+    <div class="well">
+        <h2>{{title}}</h2>
+        <div class="progress progress-striped">
+            <div class="bar" style="width: 0%;"></div>
+        </div>
+        <div class="time">
+            <span class="time-elapsed">0:00</span> / <span class="time-total">0:00</span>
+        </div>
+        <div class="controls">
+            <div class="btn-group">
+                <button class="btn btn-loading"><i class="icon-refresh spin"></i></button>
+                <button class="btn btn-back"><i class="icon-step-backward"></i></button>
+                <button class="btn btn-next"><i class="icon-step-forward"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
