@@ -1,7 +1,7 @@
 Shiva = {}
 Shiva.Controllers = {
     ArtistList: function($scope, $http) {
-        $http.get('js/artists.json').success(function(data) {
+        $http.get('/api/artists').success(function(data) {
             $scope.artists = data;
             // Hack
             window.document.getElementById('artistName').innerHTML = 'Music Player';
@@ -17,7 +17,7 @@ Shiva.Controllers = {
 
         if (artistSlug) {
             console.log('artist slug: ' + artistSlug);
-            $http.get('js/' + artistSlug + '.json').success(function (data) {
+            $http.get('/api/artist/' + artistSlug + '?fulltree=true').success(function (data) {
                 $scope.artist = data;
                 if (songSlug) {
                     console.log('song slug: ' + songSlug);
