@@ -1,5 +1,5 @@
 <ul class="albums span2">
-    <li ng-repeat="_album in artist.albums">
+    <li ng-repeat="_album in artist.albums" class="album">
         <a href="#/{{ artist.slug }}/{{ _album.slug }}" class="thumbnail" width="160" height="160"><img ng-src="{{ _album.cover }}" alt="{{ _album.name }}" title="{{ _album.name }}"></a>
     </li>
 </ul>
@@ -8,7 +8,7 @@
         {{ album.name }} ({{ year }})
     </h6>
 
-    <img ng-src="{{ album.cover }}" alt="{{ album.name }}" class="albumcover img-rounded">
+    <img ng-src="{{ album.cover }}" alt="{{ album.name }}" class="albumcover img-rounded" ng-click="playAlbum(album)">
 
     <h5>
         by {{ artist.name }}

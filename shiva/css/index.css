@@ -17,6 +17,9 @@ a:hover {
     max-height: 230px;
     max-width: 254px;
 }
+.albums .album {
+    margin-bottom: 1em;
+}
 footer {
     padding: 40px 20px;
     display: block;
