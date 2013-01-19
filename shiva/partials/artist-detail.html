@@ -8,7 +8,7 @@
         {{ album.name }} ({{ year }})
     </h6>
 
-    <img ng-src="{{ album.cover }}" alt="{{ album.name }}" class="albumcover img-rounded" ng-click="playAlbum(album)">
+    <img id="albumcover" ng-src="{{ album.cover }}" alt="{{ album.name }}" class="albumcover img-rounded" ng-click="addAlbum(album)">
 
     <h5>
         by {{ artist.name }}
@@ -26,11 +26,11 @@
     </h6>
     <div class="well">
         <h2>{{title}}</h2>
-        <div class="progress progress-striped">
-            <div class="bar" style="width: 0%;"></div>
+        <div id="progress" class="progress-striped">
+            <div id="progressbar" style="width: 0%;"></div>
         </div>
         <div class="time">
-            <span class="time-elapsed">0:00</span> / <span class="time-total">0:00</span>
+            <span id="timeelapsed">0:00</span> / <span id="timetotal">0:00</span>
         </div>
         <div class="controls">
             <div class="btn-group">

@@ -32,7 +32,7 @@ def serve(path=DEFAULT_PATH):
 def proxy(path):
     import urllib
 
-    API_URI = 'http://localhost:5000'
+    API_URI = 'http://localhost:9002'
     uri = '%s/%s' % (API_URI, path)
 
     if request.query_string:
