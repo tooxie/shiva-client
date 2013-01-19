@@ -6,9 +6,8 @@ Shiva.Controllers = {
             // Hack
             window.document.getElementById('artistName').innerHTML = 'Music Player';
         });
-
-        // $scope.orderProp = 'age';
     },
+
     Artist: function($scope, $http, $routeParams) {
         var artistSlug = $routeParams.artistSlug,
             songSlug = $routeParams.songSlug,
@@ -16,16 +15,12 @@ Shiva.Controllers = {
             x = 0;
 
         if (artistSlug) {
-            console.log('artist slug: ' + artistSlug);
             $http.get('/api/artist/' + artistSlug + '?fulltree=true').success(function (data) {
                 $scope.artist = data;
                 if (songSlug) {
-                    console.log('song slug: ' + songSlug);
                     x = data.albums.length;
                     while (x && !found) {
-                        console.log(data.albums[x-1].slug);
                         if (data.albums[x-1].slug === songSlug) {
-                            console.info();
                             $scope.album = data.albums[x-1];
                             found = true;
                         }
@@ -34,7 +29,6 @@ Shiva.Controllers = {
                 } else {
                     $scope.album = data.albums[0];
                 }
-                console.info($scope.album);
                 // Hack
                 document.getElementById('artistName').innerHTML = data.name;
             });
@@ -45,15 +39,31 @@ Shiva.Controllers = {
 
             index = Shiva.Playlist.addAlbum(album);
 
-            console.log('addAlbum.index: ' + index);
-
             if (Shiva.Playlist.config.playing == false) {
-                console.log('addAlbum: ' + index);
                 Shiva.Playlist.play(index);
             }
         }
+
+        $scope.playToggle = function() {
+            if (Shiva.Playlist.config.playing == true) {
+                Shiva.Playlist.pause();
+            } else {
+                Shiva.Playlist.resume();
+            }
+        }
+
+        $scope.playNext = function() {
+            Shiva.Playlist.next();
+        }
+
+        $scope.playPrev = function() {
+            Shiva.Playlist.prev();
+        }
+
+        $scope.playlist = Shiva.Playlist;
     }
 }
+
 Shiva.Player = (function() {
     var audio = new Audio();
     audio.addEventListener('ended', function(){
@@ -99,75 +109,101 @@ Shiva.Playlist = {
     getMetadata: function() {
         var mins = ~~(Shiva.Player.duration / 60);
         var secs = (Shiva.Player.duration % 60).toFixed();
-        var btn = document.getElementsByClassName('btn-loading');
+        var btn = document.getElementById('play');
         secs = (secs.length < 2) ? "0" + secs : secs;
 
-        document.getElementById('timetotal').innerHTML = Shiva.Player.duration;
-        console.log('duration: ' + Shiva.Player.duration);
-        // btn.className = '';
-        if (btn.length > 0) {
-            console.info(btn);
-            btn[0].className = 'btn btn-play';
-            // btn.children[0].className = '';
-            if (btn[0].children.length > 0) {
-                btn[0].children[0].className = 'icon-play';
-            }
+        document.getElementById('timetotal').innerHTML = mins + ':' + secs;
+        console.info('Playing "' + this.tracks[Shiva.PlaylistIndex].title + '" (' + mins + ':' + secs + ')');
+        btn.className = 'btn btn-play';
+        if (btn.children.length > 0) {
+            btn.children[0].className = 'icon-play';
         }
 
-        // app.layout.$el.find('.time-total').html(mins + ":" + secs);
-        // app.layout.$el.find('.btn-loading').removeClass('btn-loading').addClass('btn-play').find('i').removeClass('icon-refresh').removeClass('spin').addClass('icon-play');
         if(Shiva.Playlist.config.playing == true) {
-            Shiva.Playlist.play();
-            Shiva.Playlist.config.playing = true;
-
+            var btn = document.getElementById('play');
             document.getElementById('progress').className = 'active';
-            // app.layout.$el.find('.progress').addClass('active');
-            var btn = document.getElementsByClassName('btn-play')[0];
             btn.className = 'btn btn-pause';
             btn.children[0].className = 'icon-pause';
-
-            // app.layout.$el.find('.btn-play').removeClass('btn-play').addClass('btn-pause').find('i').removeClass('icon-play').addClass('icon-pause');
         }
     },
     addOne: function(track) {
         this.tracks = this.tracks.concat(track);
     },
     play: function(index) {
-        console.log('play(' + index + ')');
-        console.log('tracks.length: ' + Shiva.Playlist.tracks.length);
+        document.getElementById('play').children[0].className = 'icon-refresh spin';
 
         Shiva.PlaylistIndex = index || 0;
         Shiva.Player.src = this.tracks[Shiva.PlaylistIndex].stream_uri;
-        console.log(Shiva.Player.src);
+
         Shiva.Player.load();
         Shiva.Player.play();
-        console.info('Playing "' + this.tracks[Shiva.PlaylistIndex].title + '"');
         this.config.playing = true;
+    },
+    resume: function() {
+        if (!this.config.playing && this.tracks.length) {
+            console.info('Resuming playback');
+            document.getElementById('play').children[0].className = 'icon-pause';
+            this.config.playing = true;
+            Shiva.Player.play();
+        }
     },
     next: function() {
         /*
          * Plays the next song on the playlist. If it reaches the end will
          * start over again when Shiva.Playlist.config.repeat is set to true.
-         * Otherwise will just stop the reproduction.
+         * Otherwise will just stop the reproduction. If the 'force' parameter
+         * is provided then it will ignore the config and go to the first song
+         * when the end is reached.
          */
+        var _playing = this.config.playing;
+
+        this.pause();
+
+        // If playlist arrived to an end
         if (Shiva.PlaylistIndex == this.tracks.length - 1) {
             Shiva.PlaylistIndex = 0;
             if (this.config.repeat == false) {
-                Shiva.Playlist.config.playing = false;
+                _playing = false;
             }
         } else {
             Shiva.PlaylistIndex = Shiva.PlaylistIndex + 1;
         }
-        if (Shiva.Playlist.config.playing == true) {
-            console.log('next: ' + Shiva.PlaylistIndex);
+
+        if (_playing) {
+            console.log('Skipping');
+            this.play(Shiva.PlaylistIndex);
+        }
+    },
+    prev: function() {
+        var _playing = this.config.playing;
+
+        this.pause();
+
+        if (Shiva.PlaylistIndex == 0) {
+            Shiva.PlaylistIndex = this.tracks.length - 1;
+            if (this.config.repeat == false) {
+                _playing = false;
+            }
+        } else {
+            Shiva.PlaylistIndex = Shiva.PlaylistIndex - 1;
+        }
+
+        if (_playing) {
+            console.log('Skipping');
             this.play(Shiva.PlaylistIndex);
         }
     },
     pause: function() {
-        Shiva.Player.pause();
-        this.config.playing = false;
+        if (this.config.playing) {
+            console.log('Pausing');
+            document.getElementById('play').children[0].className = 'icon-play';
+            Shiva.Player.pause();
+            this.config.playing = false;
+        }
     },
     stop: function() {
+        console.log('Stopping');
+        document.getElementById('play').children[0].className = 'icon-play';
         Shiva.Player.pause();
         Shiva.src = '';
         this.config.playing = false;

@@ -34,10 +34,21 @@
         </div>
         <div class="controls">
             <div class="btn-group">
-                <button class="btn btn-loading"><i class="icon-refresh spin"></i></button>
-                <button class="btn btn-back"><i class="icon-step-backward"></i></button>
-                <button class="btn btn-next"><i class="icon-step-forward"></i></button>
+                <button id="play" class="btn btn-loading" ng-click="playToggle()"><i class="icon-play"></i></button>
+                <button id="back" class="btn btn-back" ng-click="playPrev()"><i class="icon-step-backward"></i></button>
+                <button id="next" class="btn btn-next" ng-click="playNext()"><i class="icon-step-forward"></i></button>
             </div>
         </div>
+    </div>
+
+    <h6>
+        Playlist
+    </h6>
+    <div class="well">
+        <ol>
+            <li ng-repeat="_track in playlist.tracks">
+                {{ _track.title }}
+            </li>
+        </ol>
     </div>
 </div>
