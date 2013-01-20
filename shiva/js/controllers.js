@@ -1,10 +1,24 @@
-Shiva = {}
+Shiva = {};
+
+Shiva.constants = {
+    PAUSED: 'PAUSED',
+    PLAYING: 'PLAYING',
+    LOADING: 'LOADING',
+    EMPTY: 'EMPTY'
+};
+
+// TODO
+Shiva.ActiveAlbum = {
+    album: null
+};
+
 Shiva.Controllers = {
     ArtistList: function($scope, $http) {
         $http.get('/api/artists').success(function(data) {
             $scope.artists = data;
-            // Hack
-            window.document.getElementById('artistName').innerHTML = 'Music Player';
+            // HACK
+            document.getElementById('artistname').innerHTML = 'Music Player';
+            document.getElementsByTagName('title')[0].innerHTML = 'Shiva &raquo; Music Player';
         });
     },
 
@@ -29,73 +43,66 @@ Shiva.Controllers = {
                 } else {
                     $scope.album = data.albums[0];
                 }
-                // Hack
-                document.getElementById('artistName').innerHTML = data.name;
+                // HACK: How can I delegate this to angular?
+                document.getElementById('artistname').innerHTML = data.name;
+                document.getElementsByTagName('title')[0].innerHTML = 'Shiva &raquo; ' + data.name;
             });
         }
 
-        $scope.addAlbum = function(album) {
-            var index = 0;
-
-            index = Shiva.Playlist.addAlbum(album);
-
-            if (Shiva.Playlist.config.playing == false) {
-                Shiva.Playlist.play(index);
-            }
-        }
-
-        $scope.playToggle = function() {
-            if (Shiva.Playlist.config.playing == true) {
-                Shiva.Playlist.pause();
-            } else {
-                Shiva.Playlist.resume();
-            }
-        }
-
-        $scope.playNext = function() {
-            Shiva.Playlist.next();
-        }
-
-        $scope.playPrev = function() {
-            Shiva.Playlist.prev();
-        }
-
         $scope.playlist = Shiva.Playlist;
+        $scope.player = Shiva.Player;
+        // $scope.activeAlbum = Shiva.ActiveAlbum;
+
+        // Events
+        Shiva.Player.audio.addEventListener('ended', function(){
+            Shiva.Playlist.next();
+        }, false);
+        Shiva.Player.audio.addEventListener('timeupdate', function(){
+            Shiva.Playlist.update();
+            $scope.$apply(function() {
+                $scope.player = Shiva.Player;
+            });
+        }, false);
+        Shiva.Player.audio.addEventListener('loadedmetadata', function(){
+            Shiva.Playlist.setMetadata();
+            $scope.$apply(function() {
+                $scope.player = Shiva.Player;
+            });
+        }, false);
     }
 }
 
-Shiva.Player = (function() {
-    var audio = new Audio();
-    audio.addEventListener('ended', function(){
-        Shiva.Playlist.next();
-    }, false);
-    audio.addEventListener('timeupdate', function(){
-        Shiva.Playlist.timeUpdate();
-    }, false);
-    audio.addEventListener('loadedmetadata', function(){
-        Shiva.Playlist.getMetadata();
-    }, false);
-
-    return audio;
-})();
 Shiva.Playlist = {
     tracks: [],
-    timeUpdate: function() {
-        var mins = ~~(Shiva.Player.currentTime / 60);
-        var secs = (Shiva.Player.currentTime % 60).toFixed() + '';
-        secs = (secs.length < 2) ? "0" + secs : secs;
-        var playedPercent =  ((Shiva.Player.currentTime / Shiva.Player.duration) * 100) + "%";
 
-        document.getElementById('timeelapsed').innerHTML = mins + ':' + secs;
-        document.getElementById('progressbar').style.width = playedPercent + '%';
+    index: 0,
+
+    config: {
+        repeat: false
     },
+
+    isPlaying: function () {
+        return Shiva.Player.isPlaying();
+    },
+
+    timeUpdate: function() {
+        var mins = ~~(Shiva.Player.currentTime / 60),
+            secs = (Shiva.Player.currentTime % 60).toFixed() + '',
+            timeline = document.getElementById('timeelapsed'),
+            playedPercent =  ((Shiva.Player.currentTime / Shiva.Player.duration) * 100) + "%";
+
+        secs = (secs.length < 2) ? "0" + secs : secs;
+
+        if (timeline) {
+            timeline.innerHTML = mins + ':' + secs;
+            document.getElementById('progressbar').style.width = playedPercent + '%';
+        }
+    },
+
     addAlbum: function(album) {
-        console.log('Shiva.Playlist.addAlbum()');
         var tracks = album.tracks,
             max = tracks.length,
             x = max;
-
-        console.log('addAlbum.max: ' + max);
 
         while (x--) {
             this.addOne(tracks[(max - x) - 1]);
@@ -106,47 +113,34 @@ Shiva.Playlist = {
         return this.tracks.length - tracks.length;
 
     },
-    getMetadata: function() {
-        var mins = ~~(Shiva.Player.duration / 60);
-        var secs = (Shiva.Player.duration % 60).toFixed();
-        var btn = document.getElementById('play');
-        secs = (secs.length < 2) ? "0" + secs : secs;
 
-        document.getElementById('timetotal').innerHTML = mins + ':' + secs;
-        console.info('Playing "' + this.tracks[Shiva.PlaylistIndex].title + '" (' + mins + ':' + secs + ')');
-        btn.className = 'btn btn-play';
-        if (btn.children.length > 0) {
-            btn.children[0].className = 'icon-play';
-        }
-
-        if(Shiva.Playlist.config.playing == true) {
-            var btn = document.getElementById('play');
-            document.getElementById('progress').className = 'active';
-            btn.className = 'btn btn-pause';
-            btn.children[0].className = 'icon-pause';
-        }
+    setMetadata: function() {
+        Shiva.Player.setMetadata();
     },
+
+    update: function() {
+        Shiva.Player.update();
+    },
+
     addOne: function(track) {
         this.tracks = this.tracks.concat(track);
     },
+
     play: function(index) {
-        document.getElementById('play').children[0].className = 'icon-refresh spin';
-
-        Shiva.PlaylistIndex = index || 0;
-        Shiva.Player.src = this.tracks[Shiva.PlaylistIndex].stream_uri;
-
-        Shiva.Player.load();
-        Shiva.Player.play();
-        this.config.playing = true;
-    },
-    resume: function() {
-        if (!this.config.playing && this.tracks.length) {
-            console.info('Resuming playback');
-            document.getElementById('play').children[0].className = 'icon-pause';
-            this.config.playing = true;
+        if (!this.isPlaying()) {
+            this.index = index || 0;
+            Shiva.Player.setTrack(this.tracks[this.index]);
             Shiva.Player.play();
         }
     },
+
+    resume: function() {
+        if (!this.isPlaying() && this.tracks.length) {
+            console.info('Resuming playback');
+            Shiva.Player.play();
+        }
+    },
+
     next: function() {
         /*
          * Plays the next song on the playlist. If it reaches the end will
@@ -155,65 +149,134 @@ Shiva.Playlist = {
          * is provided then it will ignore the config and go to the first song
          * when the end is reached.
          */
-        var _playing = this.config.playing;
-
-        this.pause();
+        var _playing = this.isPlaying();
 
         // If playlist arrived to an end
-        if (Shiva.PlaylistIndex == this.tracks.length - 1) {
-            Shiva.PlaylistIndex = 0;
+        if (this.index == this.tracks.length - 1) {
+            this.index = 0;
             if (this.config.repeat == false) {
                 _playing = false;
+                Shiva.Player.pause();
             }
         } else {
-            Shiva.PlaylistIndex = Shiva.PlaylistIndex + 1;
+            this.index = this.index + 1;
         }
 
         if (_playing) {
-            console.log('Skipping');
-            this.play(Shiva.PlaylistIndex);
+            Shiva.Player.setTrack(this.tracks[this.index]);
+            Shiva.Player.play();
         }
     },
+
     prev: function() {
-        var _playing = this.config.playing;
+        var _playing = this.isPlaying();
 
-        this.pause();
-
-        if (Shiva.PlaylistIndex == 0) {
-            Shiva.PlaylistIndex = this.tracks.length - 1;
+        if (this.index == 0) {
+            this.index = this.tracks.length - 1;
             if (this.config.repeat == false) {
                 _playing = false;
             }
         } else {
-            Shiva.PlaylistIndex = Shiva.PlaylistIndex - 1;
+            this.index = this.index - 1;
         }
 
         if (_playing) {
-            console.log('Skipping');
-            this.play(Shiva.PlaylistIndex);
+            Shiva.Player.setTrack(this.tracks[this.index]);
+            Shiva.Player.play();
         }
     },
+
     pause: function() {
-        if (this.config.playing) {
-            console.log('Pausing');
-            document.getElementById('play').children[0].className = 'icon-play';
+        if (this.isPlaying()) {
             Shiva.Player.pause();
-            this.config.playing = false;
         }
     },
+
     stop: function() {
-        console.log('Stopping');
-        document.getElementById('play').children[0].className = 'icon-play';
         Shiva.Player.pause();
         Shiva.src = '';
-        this.config.playing = false;
     },
-    config: {
-        playing: false,
-        repeat: false
+
+    setCurrentTrack: function(track) {
+        Shiva.CurrentTrack.track = track;
+    },
+
+    setActiveAlbum: function(album) {
+        Shiva.ActiveAlbum.album = album;
     }
 };
-Shiva.PlaylistIndex = 0;
+
+Shiva.Player = {
+    track: null,
+
+    audio: new Audio(),
+
+    bitrate: 0,
+
+    playbackStatus: Shiva.constants.EMPTY,
+
+    elapsed: {
+        minutes: 0,
+        seconds: '00',
+        percent: 0
+    },
+
+    duration: {
+        minutes: 0,
+        seconds: '00'
+    },
+
+    isPlaying: function() {
+        return this.playbackStatus === Shiva.constants.PLAYING;
+    },
+
+    setTrack: function(track) {
+        this.track = track;
+        this.bitrate = track.bitrate;
+        this.audio.src = track.stream_uri;
+        this.audio.load();
+        this.playbackStatus = Shiva.constants.PAUSED;
+    },
+
+    setMetadata: function() {
+        var _seconds = (this.audio.duration % 60).toFixed();
+
+        this.duration.minutes = ~~(this.audio.duration / 60);
+        this.duration.seconds = (_seconds.length < 2) ? "0" + _seconds : _seconds;
+    },
+
+    update: function() {
+        var _seconds = (this.audio.currentTime % 60).toFixed() + '';
+
+        this.elapsed.minutes = ~~(this.audio.currentTime / 60);
+        this.elapsed.seconds = (_seconds.length < 2) ? "0" + _seconds : _seconds;
+        this.elapsed.percent =  (this.audio.currentTime / this.audio.duration) * 100;
+    },
+
+    togglePlay: function() {
+        if (this.track) {
+            if (this.isPlaying()) {
+                this.pause();
+            } else {
+                this.play();
+            }
+        } else {
+            console.log('DERP');
+        }
+    },
+
+    play: function() {
+        console.info('Playing "' + this.track.title + '"');
+        this.playbackStatus = Shiva.constants.PLAYING;
+        this.audio.play();
+    },
+
+    pause: function() {
+        console.log('Pausing');
+        this.playbackStatus = Shiva.constants.PAUSED;
+        this.audio.pause();
+    }
+};
 
 Shiva.Controllers.ArtistList.$inject = ['$scope', '$http'];
 Shiva.Controllers.Artist.$inject = ['$scope', '$http', '$routeParams'];

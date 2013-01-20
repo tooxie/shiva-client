@@ -28,6 +28,12 @@ footer {
 ul {
     list-style: none;
 }
+#progressbar {
+    width: 0%;
+}
+#playlist li:hover {
+    background-color: rgb(255, 255, 255);
+}
 @-webkit-keyframes rotate {
     from {
         -webkit-transform: rotate(0deg);

@@ -8,7 +8,7 @@
         {{ album.name }} ({{ year }})
     </h6>
 
-    <img id="albumcover" ng-src="{{ album.cover }}" alt="{{ album.name }}" class="albumcover img-rounded" ng-click="addAlbum(album)">
+    <img id="albumcover" ng-src="{{ album.cover }}" alt="{{ album.name }}" class="albumcover img-rounded" ng-click="playlist.addAlbum(album); playlist.play();">
 
     <h5>
         by {{ artist.name }}
@@ -25,18 +25,25 @@
         Now Playing
     </h6>
     <div class="well">
-        <h2>{{title}}</h2>
-        <div id="progress" class="progress-striped">
-            <div id="progressbar" style="width: 0%;"></div>
+
+        <h6>
+            {{ player.track.title }}&nbsp;
+        </h6>
+        <div class="progress progress-striped">
+            <div id="progressbar" class="bar" style="width: {{ player.elapsed.percent }}%"></div>
         </div>
         <div class="time">
-            <span id="timeelapsed">0:00</span> / <span id="timetotal">0:00</span>
+            <span id="timeelapsed">{{ player.elapsed.minutes }}:{{ player.elapsed.seconds }}</span> / <span id="timetotal">{{ player.duration.minutes }}:{{ player.duration.seconds }}</span>
+            (<span id="bitrate" ng-bind="player.bitrate">0</span> kbps)
         </div>
         <div class="controls">
             <div class="btn-group">
-                <button id="play" class="btn btn-loading" ng-click="playToggle()"><i class="icon-play"></i></button>
-                <button id="back" class="btn btn-back" ng-click="playPrev()"><i class="icon-step-backward"></i></button>
-                <button id="next" class="btn btn-next" ng-click="playNext()"><i class="icon-step-forward"></i></button>
+
+                <button ng-show="!player.isPlaying()" id="play" class="btn btn-play" ng-click="player.togglePlay()"><i class="icon-play"></i></button>
+                <button ng-show="player.isPlaying()" id="play" class="btn btn-pause" ng-click="player.togglePlay()"><i class="icon-pause"></i></button>
+
+                <button id="back" class="btn btn-back" ng-click="playlist.prev()"><i class="icon-step-backward"></i></button>
+                <button id="next" class="btn btn-next" ng-click="playlist.next()"><i class="icon-step-forward"></i></button>
             </div>
         </div>
     </div>
@@ -45,7 +52,10 @@
         Playlist
     </h6>
     <div class="well">
-        <ol>
+        <div ng-hide="playlist.tracks.length">
+            No tracks in the playlist
+        </div>
+        <ol id="playlist">
             <li ng-repeat="_track in playlist.tracks">
                 {{ _track.title }}
             </li>
