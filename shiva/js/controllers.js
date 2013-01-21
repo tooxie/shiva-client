@@ -20,6 +20,9 @@ Shiva.Controllers = {
             document.getElementById('artistname').innerHTML = 'Music Player';
             document.getElementsByTagName('title')[0].innerHTML = 'Shiva &raquo; Music Player';
         });
+        if (Shiva.Player.audio.timeUpdateHandler) {
+            Shiva.Player.audio.removeEventListener('timeupdate', Shiva.Player.audio.timeUpdateHandler, false);
+        }
     },
 
     Artist: function($scope, $http, $routeParams) {
@@ -54,15 +57,16 @@ Shiva.Controllers = {
         // $scope.activeAlbum = Shiva.ActiveAlbum;
 
         // Events
-        Shiva.Player.audio.addEventListener('ended', function(){
-            Shiva.Playlist.next();
-        }, false);
-        Shiva.Player.audio.addEventListener('timeupdate', function(){
+        Shiva.Player.audio.timeUpdateHandler = function() {
             Shiva.Playlist.update();
             $scope.$apply(function() {
                 $scope.player = Shiva.Player;
             });
+        }
+        Shiva.Player.audio.addEventListener('ended', function(){
+            Shiva.Playlist.next();
         }, false);
+        Shiva.Player.audio.addEventListener('timeupdate', Shiva.Player.audio.timeUpdateHandler, false);
         Shiva.Player.audio.addEventListener('loadedmetadata', function(){
             Shiva.Playlist.setMetadata();
             $scope.$apply(function() {
@@ -119,6 +123,7 @@ Shiva.Playlist = {
     },
 
     update: function() {
+        console.log('Updating...');
         Shiva.Player.update();
     },
 
