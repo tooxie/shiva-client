@@ -47,6 +47,7 @@ Shiva.Controllers = {
                     $scope.album = data.albums[0];
                 }
                 // HACK: How can I delegate this to angular?
+                // Solution: Use $rootScope
                 document.getElementById('artistname').innerHTML = data.name;
                 document.getElementsByTagName('title')[0].innerHTML = 'Shiva &raquo; ' + data.name;
             });
