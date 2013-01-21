@@ -39,11 +39,11 @@
         <div class="controls">
             <div class="btn-group">
 
-                <button ng-show="!player.isPlaying()" id="play" class="btn btn-play" ng-click="player.togglePlay()"><i class="icon-play"></i></button>
-                <button ng-show="player.isPlaying()" id="play" class="btn btn-pause" ng-click="player.togglePlay()"><i class="icon-pause"></i></button>
+                <button title="Play" ng-show="!player.isPlaying()" id="play" class="btn btn-play" ng-click="player.togglePlay()"><i class="icon-play"></i></button>
+                <button title="Pause" ng-show="player.isPlaying()" id="play" class="btn btn-pause" ng-click="player.togglePlay()"><i class="icon-pause"></i></button>
 
-                <button id="back" class="btn btn-back" ng-click="playlist.prev()"><i class="icon-step-backward"></i></button>
-                <button id="next" class="btn btn-next" ng-click="playlist.next()"><i class="icon-step-forward"></i></button>
+                <button title="Play previous track" id="back" class="btn btn-back" ng-click="playlist.prev()"><i class="icon-step-backward"></i></button>
+                <button title="Play next track" id="next" class="btn btn-next" ng-click="playlist.next()"><i class="icon-step-forward"></i></button>
             </div>
         </div>
     </div>
