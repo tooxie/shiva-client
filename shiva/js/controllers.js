@@ -88,20 +88,6 @@ Shiva.Playlist = {
         return Shiva.Player.isPlaying();
     },
 
-    timeUpdate: function() {
-        var mins = ~~(Shiva.Player.currentTime / 60),
-            secs = (Shiva.Player.currentTime % 60).toFixed() + '',
-            timeline = document.getElementById('timeelapsed'),
-            playedPercent =  ((Shiva.Player.currentTime / Shiva.Player.duration) * 100) + "%";
-
-        secs = (secs.length < 2) ? "0" + secs : secs;
-
-        if (timeline) {
-            timeline.innerHTML = mins + ':' + secs;
-            document.getElementById('progressbar').style.width = playedPercent + '%';
-        }
-    },
-
     addAlbum: function(album) {
         var tracks = album.tracks,
             max = tracks.length,
@@ -135,6 +121,17 @@ Shiva.Playlist = {
             Shiva.Player.setTrack(this.tracks[this.index]);
             Shiva.Player.play();
         }
+    },
+
+    pause: function() {
+        if (this.isPlaying()) {
+            Shiva.Player.pause();
+        }
+    },
+
+    stop: function() {
+        Shiva.Player.pause();
+        Shiva.src = '';
     },
 
     resume: function() {
@@ -187,17 +184,6 @@ Shiva.Playlist = {
             Shiva.Player.setTrack(this.tracks[this.index]);
             Shiva.Player.play();
         }
-    },
-
-    pause: function() {
-        if (this.isPlaying()) {
-            Shiva.Player.pause();
-        }
-    },
-
-    stop: function() {
-        Shiva.Player.pause();
-        Shiva.src = '';
     },
 
     setCurrentTrack: function(track) {
