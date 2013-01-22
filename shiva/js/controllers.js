@@ -71,6 +71,9 @@ Shiva.Controllers = {
 
         $scope.playlist = Shiva.Playlist;
         $scope.player = Shiva.Player;
+        $scope.onSort = function() {
+            console.log('onSort()');
+        }
         // $scope.activeAlbum = Shiva.ActiveAlbum;
     }
 }
@@ -166,7 +169,7 @@ Shiva.Playlist = {
     },
 
     play: function(index) {
-        if (!this.isPlaying()) {
+        if ((typeof(index) !== 'undefined' || !this.isPlaying()) && index != this.index) {
             this.index = index || 0;
             Shiva.Player.setTrack(this.tracks[this.index]);
             Shiva.Player.play();

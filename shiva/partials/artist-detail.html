@@ -54,13 +54,12 @@
     <h6>
         Playlist
     </h6>
-    <div class="well">
+    <div class="well" ng-app="myApp">
         <div ng-hide="playlist.tracks.length">
             No tracks in the playlist
         </div>
-        <ol id="playlist">
-            <li id="track{{ $index }}" ng-repeat="_track in playlist.tracks"
-                ng-class="{track: 1, active: $index==playlist.index}">
+        <ol id="playlist" ngSortable="algo">
+            <li ng-repeat="_track in playlist.tracks" ng-class="{track: 1, active: $index==playlist.index, even: $index%2==0, odd: !($index%2==0)}" draggable="true" id="track-{{ _track.id }}">
                 <span class="title" ng-click="playlist.stop(); playlist.play($index)">{{ _track.title }}</span>
                 <a href="" class="remove" title="Remove track" ng-click="playlist.removeTrack($index)">x</a>
             </li>

@@ -37,7 +37,13 @@ li.active {
 #progressbar {
     width: 0%;
 }
-#playlist li:hover {
+#playlist li {
+    padding: 3px 6px;
+}
+#playlist li.active {
+    font-weight: bold;
+}
+#playlist li.even {
     background-color: rgb(255, 255, 255);
 }
 li.track .remove {
@@ -51,6 +57,13 @@ li.track:hover .remove {
 }
 #playlist li.track .title:not(active):hover {
     cursor: pointer;
+}
+#playlist li:hover {
+    background-color: rgba(0, 0, 255, 0.1);
+}
+#playlist li:not(.active) span:hover {
+    cursor: pointer;
+    text-decoration: underline;
     color: blue;
 }
 @-webkit-keyframes rotate {
@@ -103,4 +116,11 @@ li.track:hover .remove {
     -moz-animation-duration: 1s;
     -moz-animation-iteration-count: infinite;
     -moz-animation-timing-function: linear;
+}
+[draggable] {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: move;
 }
