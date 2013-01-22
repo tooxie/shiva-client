@@ -1,4 +1,6 @@
-angular.module('shiva', []).config(['$routeProvider', function($routeProvider) {
+if (typeof(Shiva) === 'undefined') { Shiva = {}; }
+
+Shiva.app = angular.module('shiva', []).config(['$routeProvider', function($routeProvider) {
     $routeProvider
         .when('/', {
             templateUrl: 'partials/artist-list.html',

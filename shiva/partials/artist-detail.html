@@ -5,7 +5,7 @@
 </ul>
 <div class="tracks span3">
     <h6>
-        {{ album.name }} ({{ year }})
+        {{ album.name }} <span class="year" ng-show="album.year">({{ album.year }})</span>
     </h6>
 
     <div class="albumcover">
@@ -58,7 +58,7 @@
         <div ng-hide="playlist.tracks.length">
             No tracks in the playlist
         </div>
-        <ol id="playlist" ngSortable="algo">
+        <ol id="playlist" ng-sortable="playlist.tracks">
             <li ng-repeat="_track in playlist.tracks" ng-class="{track: 1, active: $index==playlist.index, even: $index%2==0, odd: !($index%2==0)}" draggable="true" id="track-{{ _track.id }}">
                 <span class="title" ng-click="playlist.stop(); playlist.play($index)">{{ _track.title }}</span>
                 <a href="" class="remove" title="Remove track" ng-click="playlist.removeTrack($index)">x</a>

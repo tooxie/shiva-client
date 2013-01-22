@@ -1,4 +1,4 @@
-Shiva = {};
+if (typeof(Shiva) === 'undefined') { Shiva = {}; }
 
 Shiva.constants = {
     PAUSED: 'PAUSED',
@@ -71,10 +71,6 @@ Shiva.Controllers = {
 
         $scope.playlist = Shiva.Playlist;
         $scope.player = Shiva.Player;
-        $scope.onSort = function() {
-            console.log('onSort()');
-        }
-        // $scope.activeAlbum = Shiva.ActiveAlbum;
     }
 }
 
@@ -204,10 +200,8 @@ Shiva.Playlist = {
             this.index = this.index + 1;
         }
 
-        if (_playing) {
-            Shiva.Player.setTrack(this.tracks[this.index]);
-            Shiva.Player.play();
-        }
+        Shiva.Player.setTrack(this.tracks[this.index]);
+        Shiva.Player.play();
     },
 
     prev: function() {
@@ -320,6 +314,7 @@ Shiva.Player = {
     }
 };
 
+// http://www.html5rocks.com/en/tutorials/webaudio/intro/#toc-xfade
 Shiva.Player.audio.addEventListener('ended', function(){
     Shiva.Playlist.next();
 }, false);
