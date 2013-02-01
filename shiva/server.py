@@ -7,6 +7,7 @@ DEFAULT_PATH = 'index.html'
 MIMES = {
     'css': 'text/css',
     'html': 'text/html',
+    'ico': 'image-x-icon',
     'jpg': 'image/jpeg',
     'js': 'application/javascript',
     'json': 'application/json',
