@@ -1,4 +1,13 @@
-angular.module('shiva', []).config(['$routeProvider', function($routeProvider) {
+if (typeof(Shiva) === 'undefined') { Shiva = {}; }
+
+// Not in use so far
+if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(function (position) {
+        Shiva.geolocation = position.coords;
+    });
+}
+
+Shiva.app = angular.module('shiva', []).config(['$routeProvider', function($routeProvider) {
     $routeProvider
         .when('/', {
             templateUrl: 'partials/artist-list.html',
