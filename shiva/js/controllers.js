@@ -103,12 +103,16 @@ Shiva.Playlist = {
     },
 
     addAlbum: function(album) {
-        var tracks = album.tracks,
+        var track = null,
+            tracks = album.tracks,
             max = tracks.length,
             x = max;
 
         while (x--) {
-            this.addOne(tracks[(max - x) - 1]);
+            track = tracks[(max - x) - 1];
+
+            this.addOne(track);
+
             console.log('Adding "' + tracks[(max - x) - 1].title + '" to playlist');
         }
 
@@ -127,6 +131,38 @@ Shiva.Playlist = {
 
     addOne: function(track) {
         this.tracks = this.tracks.concat(track);
+        if (!Shiva.Player.track) {
+            Shiva.Player.setTrack(track);
+        }
+    },
+
+    removeTrack: function(index) {
+        var thisTrack = this.index === index,
+            lastTrack = index === this.tracks.length - 1,
+            wasPlaying = this.isPlaying;
+
+        this.tracks.splice(index, 1);
+
+        if (thisTrack) {
+            if (lastTrack) {
+                this.index = 0;
+            }
+
+            this.stop();
+            if (this.tracks.length) {
+                if (this.config.loop) {
+                    this.reload();
+                    if (!wasPlaying) {
+                        this.pause();
+                    }
+                } else {
+                    this.load();
+                }
+            }
+        }
+        if (this.stopAt === index) {
+            this.stopAt = -1;
+        }
     },
 
     play: function(index) {
