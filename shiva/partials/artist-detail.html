@@ -8,7 +8,10 @@
         {{ album.name }} ({{ year }})
     </h6>
 
-    <img id="albumcover" ng-src="{{ album.cover }}" alt="{{ album.name }}" class="albumcover img-rounded" ng-click="playlist.addAlbum(album); playlist.play();">
+    <div class="albumcover">
+        <img id="albumcover" ng-src="{{ album.cover }}" alt="{{ album.name }}" class="albumcover img-rounded">
+    </div>
+    <a href="" ng-click="playlist.addAlbum(album)">Add album to playlist</a>
 
     <h5>
         by {{ artist.name }}
@@ -16,7 +19,7 @@
 
     <ol>
         <li ng-repeat="_track in album.tracks">
-            <a href="#/{{ artist.slug }}/{{ album.slug }}/{{ _track.id }}">{{ _track.title }}</a>
+            <a href="" ng-click="playlist.addOne(_track)">{{ _track.title }}</a>
         </li>
     </ol>
 </div>
@@ -56,8 +59,10 @@
             No tracks in the playlist
         </div>
         <ol id="playlist">
-            <li ng-repeat="_track in playlist.tracks">
-                {{ _track.title }}
+            <li id="track{{ $index }}" ng-repeat="_track in playlist.tracks"
+                ng-class="{track: 1, active: $index==playlist.index}">
+                <span class="title" ng-click="playlist.stop(); playlist.play($index)">{{ _track.title }}</span>
+                <a href="" class="remove" title="Remove track" ng-click="playlist.removeTrack($index)">x</a>
             </li>
         </ol>
     </div>

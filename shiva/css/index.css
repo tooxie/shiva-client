@@ -20,6 +20,9 @@ a:hover {
 .albums .album {
     margin-bottom: 1em;
 }
+div.albumcover {
+    margin-bottom: 1em;
+}
 footer {
     padding: 40px 20px;
     display: block;
@@ -28,11 +31,27 @@ footer {
 ul {
     list-style: none;
 }
+li.active {
+    font-weight: bold;
+}
 #progressbar {
     width: 0%;
 }
 #playlist li:hover {
     background-color: rgb(255, 255, 255);
+}
+li.track .remove {
+    width: 30px;
+    float: right;
+    visibility: hidden;
+    text-align: center;
+}
+li.track:hover .remove {
+    visibility: visible;
+}
+#playlist li.track .title:not(active):hover {
+    cursor: pointer;
+    color: blue;
 }
 @-webkit-keyframes rotate {
     from {
