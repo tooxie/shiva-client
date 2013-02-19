@@ -18,7 +18,9 @@ MIMES = {
 @app.route('/')
 @app.route('/<path:path>')
 def serve(path=DEFAULT_PATH):
-    """ Petit flask-based test server for angular-phonecat app """
+    """ Petit flask-based test server for Shiva-Client app """
+
+    path = os.path.join('shiva', path)
 
     if not os.path.exists(path):
         abort(404)
