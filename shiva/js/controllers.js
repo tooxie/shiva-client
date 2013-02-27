@@ -81,7 +81,8 @@ Shiva.Playlist = {
     index: 0,
 
     config: {
-        repeat: false
+        repeat: false,
+        mimetype: 'audio/ogg'
     },
 
     isPlaying: function () {
@@ -270,9 +271,16 @@ Shiva.Player = {
     },
 
     setTrack: function(track) {
+        var mime = Shiva.Playlist.config.mimetype,
+            path = track.files[mime];
+
+        if (path.substr(0, 1) === '/') {
+            path = '/api' + path;
+        }
+
         this.track = track;
         this.bitrate = track.bitrate;
-        this.audio.src = track.stream_uri;
+        this.audio.src = path;
         this.audio.load();
         this.playbackStatus = Shiva.constants.PAUSED;
     },
