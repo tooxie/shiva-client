@@ -1,39 +1,26 @@
-import os
+import mimetypes
+import urllib
 
 from flask import Flask, request, Response, abort
 
 app = Flask(__name__)
 DEFAULT_PATH = 'index.html'
-MIMES = {
-    'css': 'text/css',
-    'html': 'text/html',
-    'ico': 'image-x-icon',
-    'jpg': 'image/jpeg',
-    'js': 'application/javascript',
-    'json': 'application/json',
-    'png': 'image/png',
-}
-
+API_URI = 'http://localhost:9002'
 
 @app.route('/')
 @app.route('/<path:path>')
 def serve(path=DEFAULT_PATH):
-    """ Petit flask-based test server for angular-phonecat app """
-
-    if not os.path.exists(path):
+    try:
+        content = file(path, 'r').read()
+    except:
         abort(404)
-
-    content = file(path, 'r').read()
-    mimetype = MIMES[path[path.rindex('.') + 1:]]
+    mimetype = mimetypes.guess_type(path)[0]
 
     return Response(content, status=200, mimetype=mimetype)
 
 
 @app.route('/api/<path:path>')
 def proxy(path):
-    import urllib
-
-    API_URI = 'http://localhost:9002'
     uri = '%s/%s' % (API_URI, path)
 
     if request.query_string:
