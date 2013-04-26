@@ -20,11 +20,12 @@ MIMES = {
 def serve(path=DEFAULT_PATH):
     """ Petit flask-based test server for angular-phonecat app """
 
-    if not os.path.exists(path):
+    my_path = os.path.join('shiva', path)
+    if not os.path.exists(my_path):
         abort(404)
 
-    content = file(path, 'r').read()
-    mimetype = MIMES[path[path.rindex('.') + 1:]]
+    content = file(my_path, 'r').read()
+    mimetype = MIMES[my_path[my_path.rindex('.') + 1:]]
 
     return Response(content, status=200, mimetype=mimetype)
 
@@ -47,5 +48,10 @@ def proxy(path):
     return Response(_request.read(), status=_request.getcode(),
                     mimetype=mimetype)
 
-if __name__ == '__main__':
+
+def main():
     app.run('0.0.0.0', port=9001, debug=True)
+
+
+if __name__ == '__main__':
+    main()
