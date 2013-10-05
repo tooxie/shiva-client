@@ -20,6 +20,9 @@ a:hover {
 .albums .album {
     margin-bottom: 1em;
 }
+.albums h6 {
+    margin-left: 25px;
+}
 div.albumcover {
     margin-bottom: 1em;
 }

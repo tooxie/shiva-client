@@ -1,8 +1,14 @@
-<ul class="albums span2">
-    <li ng-repeat="_album in artist.albums" class="album">
-        <a href="#/{{ artist.slug }}/{{ _album.slug }}" class="thumbnail" width="160" height="160"><img ng-src="{{ _album.cover }}" alt="{{ _album.name }}" title="{{ _album.name }}"></a>
-    </li>
-</ul>
+<div class="albums span2">
+    <h6>
+        Albums
+    </h6>
+
+    <ul>
+        <li ng-repeat="_album in artist.albums" class="album">
+            <a href="#/{{ artist.slug }}/{{ _album.slug }}" class="thumbnail" width="160" height="160"><img ng-src="{{ _album.cover }}" alt="{{ _album.name }}" title="{{ _album.name }}"></a>
+        </li>
+    </ul>
+</div>
 <div class="tracks span3">
     <h6>
         {{ album.name }} ({{ year }})
