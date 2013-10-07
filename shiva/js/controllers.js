@@ -32,7 +32,7 @@ Shiva.Controllers = {
             x = 0;
 
         if (artistSlug) {
-            $http.get('/api/artist/' + artistSlug + '?fulltree=true').success(function (data) {
+            $http.get('/api/artists/' + artistSlug + '?fulltree=true').success(function (data) {
                 $scope.artist = data;
                 if (songSlug) {
                     x = data.albums.length;
