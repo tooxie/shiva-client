@@ -15,7 +15,7 @@ Shiva.ActiveAlbum = {
 Shiva.Controllers = {
     ArtistList: function($scope, $http) {
         $http.get('/api/artists').success(function(data) {
-            $scope.artists = data;
+            $scope.artists = data.items;
             // HACK
             document.getElementById('artistname').innerHTML = 'Music Player';
             document.getElementsByTagName('title')[0].innerHTML = 'Shiva &raquo; Music Player';
